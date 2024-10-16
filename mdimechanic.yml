@@ -1,0 +1,46 @@
+code_name: 'polariton_mqc'
+docker:
+  image_name: 'mdi/polaritonmqc'
+
+  build_image:
+    - apt-get update
+    - apt-get install -y vim git cmake liblapack-dev libeigen3-dev
+    - pip install numpy
+    - pip install pymdi
+    - pip install pydantic
+    - pip install Pint
+    - pip install scipy
+
+   # Create a scratch directory for Psi4
+    - mkdir /psi4_scratch
+    - echo "export PSI_SCRATCH=/psi4_scratch" >> ~/.profile
+    - echo "export PSI_SCRATCH=/psi4_scratch" >> ~/.bashrc
+
+    - echo "export PYTHONPATH=\$PYTHONPATH:/repo/install/lib" >> ~/.profile
+    - echo "export PYTHONPATH=\$PYTHONPATH:/repo/install/lib" >> ~/.bashrc
+    - echo "export PATH=\$PATH:/repo/install/bin" >> ~/.profile
+    - echo "export PATH=\$PATH:/repo/install/bin" >> ~/.bashrc
+
+  build_engine:
+    # Build Psi4
+    - |
+      if [ ! -d "/repo/build/psi4" ]; then
+        git clone https://github.com/psi4/psi4.git /repo/build/psi4
+      fi
+    - cd /repo/build/psi4
+    - |
+      if [ ! -d "objdir" ]; then
+        cmake -DCMAKE_INSTALL_PREFIX=/repo/install -S. -Bobjdir
+      fi
+    - cd objdir
+    - make -j 1
+    - make install
+
+  validate_engine:
+
+
+engine_tests:
+  # Provide at least one example input that can be used to test your code's MDI functionality
+  script:
+    - echo "Insert commands to run an example calculation here"
+    - exit 1

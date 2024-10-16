@@ -5,11 +5,11 @@ MQC_proj
 [![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/MQC_proj/branch/main/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/MQC_proj/branch/main)
 
 
-This project is for Mixed Quantum Classical method for polaritonic chemistry
+This project is for Mixed Quantum Classical methods for polaritonic chemistry
 
 ### Copyright
 
-Copyright (c) 2024, Ruby
+Copyright (c) 2024, foleylab
 
 
 #### Acknowledgements
