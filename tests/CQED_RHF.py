@@ -16,7 +16,9 @@ __date__ = "2021-08-19"
 # ==> Import Psi4, NumPy, and helper_CQED_RHF <==
 import psi4
 import numpy as np
-from helper_CQED_RHF import *
+from MQC_Proj.helper_CQED_RHF_old import *
+from MQC_Proj.helper_CQED_RHF_new import *
+
 
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")
@@ -55,14 +57,28 @@ lam_h2o = np.array([0.0, 0.0, 0.05])
 
 # run cqed_rhf on H2O
 h2o_dict = cqed_rhf(lam_h2o, h2o_string, h2o_options_dict)
+print("Type of h20_dict", type(h2o_dict))
 
 # parse dictionary for ordinary RHF and CQED-RHF energy
 h2o_cqed_rhf_e = h2o_dict["CQED-RHF ENERGY"]
 h2o_rhf_e = h2o_dict["RHF ENERGY"]
-
 
 print("\n    RHF Energy:                %.8f" % h2o_rhf_e)
 print("    CQED-RHF Energy:           %.8f" % h2o_cqed_rhf_e)
 print("    Reference CQED-RHF Energy: %.8f\n" % expected_h2o_e)
 
 psi4.compare_values(h2o_cqed_rhf_e, expected_h2o_e, 8, "H2O CQED-RHF E")
+
+# Instantiate the Psi4Calculator
+calculator = CQED_RHF_Calculation(lam_h2o, h2o_string, h2o_options_dict)
+
+# run cqed_rhf on H2O
+a1 = calculator.cal_Integrals()
+a2 = calculator.cal_quadrapole_moments()
+h2o_dict = calculator.cal_H_core()
+a3 = calculator.cqed_rhf()
+Energy1 = a3["CQED-RHF ENERGY"]
+E2 = a3["RHF ENERGY"]
+
+
+psi4.compare_values(h2o_cqed_rhf_e, Energy1, 8, "H2O CQED-RHF E")

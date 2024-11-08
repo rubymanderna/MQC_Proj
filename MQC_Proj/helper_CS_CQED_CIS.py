@@ -19,7 +19,7 @@ import psi4
 import numpy as np
 import scipy.linalg as la
 import time
-from MQC_Proj.helper_CQED_RHF import cqed_rhf
+from MQC_Proj.helper_CQED_RHF_old import cqed_rhf
 from pyscf import gto, scf
 
 

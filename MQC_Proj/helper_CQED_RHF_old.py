@@ -162,7 +162,7 @@ def cqed_rhf(lambda_vector, molecule_string, psi4_options_dict):
     Q_PF -= lambda_vector[0] * lambda_vector[1] * Q_ao_xy
     Q_PF -= lambda_vector[0] * lambda_vector[2] * Q_ao_xz
     Q_PF -= lambda_vector[1] * lambda_vector[2] * Q_ao_yz
-    print("1-e Quadrupole term Q_PF" Q_PF)
+    print("1-e Quadrupole term Q_PF", Q_PF)
 
     # Pauli-Fierz 1-e dipole terms scaled by
     # (\lambda_vector \cdot \mu_{nuc} - \lambda_vector \cdot <\mu>)
@@ -174,19 +174,20 @@ def cqed_rhf(lambda_vector, molecule_string, psi4_options_dict):
 
     # Add Pauli-Fierz terms to H_core
     # Eq. (11) in [McTague:2021:ChemRxiv]
-    #Doubt: which equation in paper? 
+    #Doubt: which equation in paper? A5
     H = H_0 + Q_PF + d_PF
 
     # Overlap for DIIS
     # DIIS is an extrapolation technique used to accelerate convergence in iterative procedures, such as the Self-Consistent Field (SCF) method.
     # S represents the overlap between atomic orbitals and elements S_ij measure how much orbital i overlaps with orbital j.
     S = mints.ao_overlap()      #S is symmetric (S_ij = S_ji) and its diagonal elements are always 1 (S_ii = 1) 
-
+    
     # Orthogonalizer A = S^(-1/2) using Psi4's matrix power.
     # A is used to transform the basis from a non-orthogonal set (like typical atomic orbitals) to an orthogonal set.
     A = mints.ao_overlap()
     A.power(-0.5, 1.0e-16)
     A = np.asarray(A)
+    
 
     print("\nStart SCF iterations:\n")
     t = time.time()
@@ -327,5 +328,70 @@ def cqed_rhf(lambda_vector, molecule_string, psi4_options_dict):
         "DIPOLE ENERGY": d_c,
         "NUCLEAR REPULSION ENERGY": Enuc,
     }
-
+    
     return cqed_rhf_dict
+
+
+
+def compute_nuclear_gradient_cqed_rhf(molecule_string, qed_rhf_energy_func, step_size=1e-5):
+    """
+    Compute the nuclear gradient using finite differences of the QED-RHF energy.
+    
+    Parameters:
+    - molecule: A object representing the molecular system, which should have:
+        - coordinates: numpy array of shape (n_atoms, 3) with atomic coordinates
+        - n_atoms: number of atoms
+
+    - qed_rhf_energy_func: A function that takes the molecule object and returns the QED-RHF energy
+
+    - step_size: The finite difference step size (default: 1e-5 bohr)
+    
+    Returns:
+    - gradient: numpy array of shape (n_atoms, 3) containing the nuclear gradient
+    """
+    # define geometry using the molecule_string
+    mol = psi4.geometry(molecule_string)
+   
+    # number of atoms
+    n_atoms = mol.natom()
+    print("Number of atoms: ", n_atoms)
+
+    #converting z matrix to cartesian coordinates using psi4
+    cartesian_coords = mol.geometry().np
+    print("Cartesian coordinates: ", cartesian_coords)
+
+    # Initialize the  Nuclear gradient array
+    n_internal_coords = 3 * n_atoms - 6 if n_atoms > 2 else 3 * n_atoms - 5
+    gradient = np.zeros(n_internal_coords)
+    
+    # Initialize the gradient array
+    gradient = np.zeros_like(cartesian_coords)
+    
+    # Compute the baseline energy
+    base_energy = qed_rhf_energy_func(mol)
+
+    # Loop over all atoms and their x, y, z coordinates
+    for atom in range(n_atoms):
+        for coord in range(3):
+            # Create copies of the molecule for positive and negative displacements
+            mol_plus = mol.clone()
+            mol_minus = mol.clone()
+            
+            # Displace the coordinate
+            coords_plus = mol_plus.geometry().np
+            coords_minus = mol_minus.geometry().np
+            
+            coords_plus[atom, coord] += step_size
+            coords_minus[atom, coord] -= step_size
+            
+            mol_plus.set_geometry(psi4.core.Matrix.from_array(coords_plus))
+            mol_minus.set_geometry(psi4.core.Matrix.from_array(coords_minus))
+            
+            # Compute energies for the displaced geometries
+            energy_plus = qed_rhf_energy_func(mol_plus)
+            energy_minus = qed_rhf_energy_func(mol_minus)
+            
+            # Compute the gradient using central difference
+            gradient[atom, coord] = (energy_plus - energy_minus) / (2 * step_size)
+    
+    return gradient
