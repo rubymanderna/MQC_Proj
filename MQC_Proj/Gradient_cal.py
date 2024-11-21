@@ -12,7 +12,6 @@ numpy_memory = 2
 # options for H2O
 h2o_options_dict = {
     "basis": "cc-pVDZ",
-    "symmetry": 'c1',
     "save_jk": True,
     "scf_type": "pk",
     "e_convergence": 1e-12,
