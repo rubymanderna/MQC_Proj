@@ -406,8 +406,8 @@ class CQED_RHF_NuclearGradient:
     def compute_displaced_energy(self, displaced_mol):
         """Compute the CQED-RHF energy for a displaced molecule
             Initialize a CQED_RHF_Calculation class instance for the displaced molecule"""
-        displaced_mol_string = displaced_mol.save_string_xyz()
-        displaced_calculation = CQED_RHF_Calculation(self.lambda_vector, displaced_mol_string, self.psi4_options_dict)
+        # displaced_mol_string = displaced_mol.save_string_xyz()
+        displaced_calculation = CQED_RHF_Calculation(self.lambda_vector, displaced_mol, self.psi4_options_dict)
         displaced_calculation.cal_Integrals()
         displaced_calculation.cal_quadrapole_moments()
         displaced_calculation.cal_H_core()
@@ -440,8 +440,21 @@ class CQED_RHF_NuclearGradient:
                 # Set the displaced geometries
                 mol_plus.set_geometry(psi4.core.Matrix.from_array(coords_plus))
                 mol_minus.set_geometry(psi4.core.Matrix.from_array(coords_minus))
-                # print("Displaced geometries set",  self.mol_plus.geometry().np, self.mol_minus.geometry().np)
-        
+
+                #converting the coordinates to string(z matriz)
+                mol_plus_string = mol_plus.save_string_xyz()
+                mol_minus_string = mol_minus.save_string_xyz()
+                # Print mol_plus geometry
+                print("mol_plus geometry:", mol_plus_string)
+                print("molecule_string type:", type(mol_plus_string))
+                # print("molecule_string:", molecule_string)  
+                # print(mol_plus.geometry().to_array())
+
+                # Print mol_minus geometry
+                print("mol_minus geometry:", mol_minus_string)
+                # print(mol_minus.geometry().to_array())
+
+                # some error in psi4 geometry while calling this function
                 # Calculate energies for displaced geometries
                 qed_rhf_energy_plus = self.compute_displaced_energy(mol_plus)
                 qed_rhf_energy_minus = self.compute_displaced_energy(mol_minus)
