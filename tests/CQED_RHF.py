@@ -19,7 +19,6 @@ import numpy as np
 from MQC_Proj.helper_CQED_RHF_old import *
 from MQC_Proj.helper_CQED_RHF_new import *
 
-
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")
 psi4.core.set_output_file("output.dat", False)

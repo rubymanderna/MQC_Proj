@@ -4,11 +4,9 @@ from unittest.mock import MagicMock, patch
 import sys
 import os
 # Add the folder path where the file is located
-folder_path = os.path.abspath("/Users/rmandern/code/MQC_Proj/MQC_Proj")
-sys.path.insert(0, folder_path)
-
-from helper_CQED_RHF_new import *
-
+sys.path.append(os.path.abspath('../MQC_Proj'))
+# from helper_CQED_RHF_new import CQED_RHF_Calculation
+from MQC_Proj.helper_CQED_RHF_new import *
 
 class Test_CQED_RHF_Calculation(unittest.TestCase):
     
