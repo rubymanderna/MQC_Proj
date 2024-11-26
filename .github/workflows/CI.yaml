@@ -54,6 +54,7 @@ jobs:
         # conda setup requires this special shell
         shell: bash -l {0}
         run: |
+          conda install -c conda-forge psi4 -y
           python -m pip install . --no-deps
           micromamba list
           
