@@ -5,7 +5,7 @@ on:
   # The cookiecutter uses the "--initial-branch" flag when it runs git-init
   push:
     branches:
-      - "main"
+      - "*"
   pull_request:
     branches:
       - "main"
@@ -20,7 +20,6 @@ jobs:
     name: Test on ${{ matrix.os }}, Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [macOS-latest, ubuntu-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11"]
@@ -34,6 +33,11 @@ jobs:
           uname -a
           df -h
           ulimit -a
+
+      - name: Remove .DS_Store files (if any)
+        shell: bash
+        run: |
+          find . -name '.DS_Store' -delete
 
       # More info on options: https://github.com/marketplace/actions/setup-micromamba
       - uses: mamba-org/setup-micromamba@v1
