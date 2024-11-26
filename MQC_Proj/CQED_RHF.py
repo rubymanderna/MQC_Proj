@@ -17,7 +17,7 @@ __date__ = "2021-08-19"
 import psi4
 import numpy as np
 # from MQC_Proj.helper_CQED_RHF_old import *
-from MQC_Proj.helper_CQED_RHF_new import CQED_RHF_Calculation
+from helper_CQED_RHF_new import CQED_RHF_Calculation
 
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")
