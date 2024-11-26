@@ -6,7 +6,7 @@ import os
 # Add the folder path where the file is located
 sys.path.append(os.path.abspath('../MQC_Proj'))
 # from helper_CQED_RHF_new import CQED_RHF_Calculation
-from MQC_Proj.helper_CQED_RHF_new import *
+from MQC_Proj.helper_CQED_RHF_new import CQED_RHF_Calculation, CQED_RHF_NuclearGradient
 
 class Test_CQED_RHF_Calculation(unittest.TestCase):
     

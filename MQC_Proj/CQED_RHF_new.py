@@ -16,7 +16,7 @@ __date__ = "2021-08-19"
 # ==> Import Psi4, NumPy, and helper_CQED_RHF <==
 import psi4
 import numpy as np
-from helper_CQED_RHF_new import *
+from helper_CQED_RHF_new import CQED_RHF_Calculation
 
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")
@@ -59,10 +59,6 @@ lam_h2o = np.array([0.0, 0.0, 0.05])
 # a2 = calculator.cal_quadrapole_moments()
 # h2o_dict = calculator.cal_H_core()
 # a3 = calculator.cqed_rhf()
-
-
-
-
 
 print("NUCLEAR GRADIENTS CALCULATION STARTED")
 a4 = compute_nuclear_gradient_cqed_rhf(lam_h2o, h2o_string, h2o_options_dict)
