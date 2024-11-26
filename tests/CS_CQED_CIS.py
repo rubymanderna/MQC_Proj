@@ -35,7 +35,7 @@ import os
 # sys.path.append(os.path.abspath('../MQC_Proj'))
 # from helper_CS_CQED_CIS import *
 from psi4.driver.procrouting.response.scf_response import tdscf_excitations
-from helper_CS_CQED_CIS import cs_cqed_cis
+from MQC_Proj.helper_CS_CQED_CIS import cs_cqed_cis
 
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")

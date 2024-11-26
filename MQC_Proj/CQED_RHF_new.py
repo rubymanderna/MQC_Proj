@@ -52,29 +52,31 @@ expected_h2o_e = -76.016355284146
 lam_h2o = np.array([0.0, 0.0, 0.05])
 
 # Instantiate the Psi4Calculator
-# calculator = CQED_RHF_Calculation(lam_h2o, h2o_string, h2o_options_dict)
+cal_energy = CQED_RHF_Calculation(lam_h2o, h2o_string, h2o_options_dict)
 
-# # run cqed_rhf on H2O
-# a1 = calculator.cal_Integrals()
-# a2 = calculator.cal_quadrapole_moments()
-# h2o_dict = calculator.cal_H_core()
-# a3 = calculator.cqed_rhf()
+# run cqed_rhf on H2O
+a1 = cal_energy.cal_Integrals()
+a2 = cal_energy.cal_quadrapole_moments()
+h2o_dict = cal_energy.cal_H_core()
+a3 = cal_energy.cqed_rhf()
 
-print("NUCLEAR GRADIENTS CALCULATION STARTED")
-a4 = compute_nuclear_gradient_cqed_rhf(lam_h2o, h2o_string, h2o_options_dict)
+# print("NUCLEAR GRADIENTS CALCULATION STARTED")
+# a4 = compute_nuclear_gradient_cqed_rhf(lam_h2o, h2o_string, h2o_options_dict)
 
 # parse dictionary for ordinary RHF and CQED-RHF energy
-# h2o_cqed_rhf_e = a3["CQED-RHF ENERGY"]
-# h2o_rhf_e = a3["RHF ENERGY"]
+h2o_cqed_rhf_e = a3["CQED-RHF ENERGY"]
+h2o_rhf_e = a3["RHF ENERGY"]
+
+print("RHF Energy Ruby")
 
 # parse dictionary for ordinary RHF and CQED-RHF energy
 # h2o_cqed_rhf_e = h2o_dict["CQED-RHF ENERGY"]
 # h2o_rhf_e = h2o_dict["RHF ENERGY"]
 
 
-# print("\n    RHF Energy:                %.8f" % h2o_rhf_e)
-# print("    CQED-RHF Energy:           %.8f" % h2o_cqed_rhf_e)
-# print("    Reference CQED-RHF Energy: %.8f\n" % expected_h2o_e)
+print("\n    RHF Energy:                %.8f" % h2o_rhf_e)
+print("    CQED-RHF Energy:           %.8f" % h2o_cqed_rhf_e)
+print("    Reference CQED-RHF Energy: %.8f\n" % expected_h2o_e)
 
 # psi4.compare_values(h2o_cqed_rhf_e, expected_h2o_e, 8, "H2O CQED-RHF E")
 # # Calculate the nuclear gradient of the CQED-RHF energy

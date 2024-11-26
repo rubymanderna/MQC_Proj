@@ -366,102 +366,102 @@ class CQED_RHF_Calculation:
         return cqed_rhf_dict
 
 
-class CQED_RHF_NuclearGradient:
-    def __init__(self, lambda_vector, molecule_string, psi4_options_dict, step_size=1e-5):
-        """
-        Initialize the nuclear gradient calculation for CQED-RHF.
+# class CQED_RHF_NuclearGradient:
+#     def __init__(self, lambda_vector, molecule_string, psi4_options_dict, step_size=1e-5):
+#         """
+#         Initialize the nuclear gradient calculation for CQED-RHF.
 
-        Parameters:
-        - lambda_vector: 1x3 array of floats representing the electric field vector
-        - molecule_string: str, specifies the molecular geometry
-        - psi4_options_dict: dict, options for the Psi4 calculation
-        - step_size: float, the finite difference step size (default: 1e-5 bohr)
-        """
-        self.lambda_vector = lambda_vector
-        self.molecule_string = molecule_string
-        self.psi4_options_dict = psi4_options_dict
-        self.step_size = step_size
-        self.mol = psi4.geometry(molecule_string)
-        self.n_atoms = self.mol.natom()
-        print("Number of atoms in the molecule:", self.n_atoms)
+#         Parameters:
+#         - lambda_vector: 1x3 array of floats representing the electric field vector
+#         - molecule_string: str, specifies the molecular geometry
+#         - psi4_options_dict: dict, options for the Psi4 calculation
+#         - step_size: float, the finite difference step size (default: 1e-5 bohr)
+#         """
+#         self.lambda_vector = lambda_vector
+#         self.molecule_string = molecule_string
+#         self.psi4_options_dict = psi4_options_dict
+#         self.step_size = step_size
+#         self.mol = psi4.geometry(molecule_string)
+#         self.n_atoms = self.mol.natom()
+#         print("Number of atoms in the molecule:", self.n_atoms)
 
-        # Store the initial Cartesian coordinates
-        self.cartesian_coords = self.mol.geometry().np
-        print("Initial Cartesian coordinates:", self.cartesian_coords)
+#         # Store the initial Cartesian coordinates
+#         self.cartesian_coords = self.mol.geometry().np
+#         print("Initial Cartesian coordinates:", self.cartesian_coords)
         
-        # Initialize a CQED_RHF_Calculation class instance
-        self.cqed_calculation = CQED_RHF_Calculation(self.lambda_vector, self.molecule_string, self.psi4_options_dict)
+#         # Initialize a CQED_RHF_Calculation class instance
+#         self.cqed_calculation = CQED_RHF_Calculation(self.lambda_vector, self.molecule_string, self.psi4_options_dict)
 
-    # Function to compute the initial CQED-RHF energy
+#     # Function to compute the initial CQED-RHF energy
 
-    def compute_initial_energy(self):
-        """Compute the initial CQED-RHF energy."""
-        self.cqed_calculation.cal_Integrals()
-        self.cqed_calculation.cal_quadrapole_moments()
-        self.cqed_calculation.cal_H_core()
-        return self.cqed_calculation.cqed_rhf()["CQED-RHF ENERGY"]
+#     def compute_initial_energy(self):
+#         """Compute the initial CQED-RHF energy."""
+#         self.cqed_calculation.cal_Integrals()
+#         self.cqed_calculation.cal_quadrapole_moments()
+#         self.cqed_calculation.cal_H_core()
+#         return self.cqed_calculation.cqed_rhf()["CQED-RHF ENERGY"]
 
-     # Function to compute the displaced molecule's CQED-RHF energy
+#      # Function to compute the displaced molecule's CQED-RHF energy
 
-    def compute_displaced_energy(self, displaced_mol):
-        """Compute the CQED-RHF energy for a displaced molecule
-            Initialize a CQED_RHF_Calculation class instance for the displaced molecule"""
-        # displaced_mol_string = displaced_mol.save_string_xyz()
-        displaced_calculation = CQED_RHF_Calculation(self.lambda_vector, displaced_mol, self.psi4_options_dict)
-        displaced_calculation.cal_Integrals()
-        displaced_calculation.cal_quadrapole_moments()
-        displaced_calculation.cal_H_core()
-        return displaced_calculation.cqed_rhf()["CQED-RHF ENERGY"]
+#     def compute_displaced_energy(self, displaced_mol):
+#         """Compute the CQED-RHF energy for a displaced molecule
+#             Initialize a CQED_RHF_Calculation class instance for the displaced molecule"""
+#         # displaced_mol_string = displaced_mol.save_string_xyz()
+#         displaced_calculation = CQED_RHF_Calculation(self.lambda_vector, displaced_mol, self.psi4_options_dict)
+#         displaced_calculation.cal_Integrals()
+#         displaced_calculation.cal_quadrapole_moments()
+#         displaced_calculation.cal_H_core()
+#         return displaced_calculation.cqed_rhf()["CQED-RHF ENERGY"]
 
-    def compute_gradient(self):
-        """Compute the nuclear gradient using finite differences of the QED-RHF energy."""
-        # Initialize gradient array
-        gradient = np.zeros_like(self.cartesian_coords)
+#     def compute_gradient(self):
+#         """Compute the nuclear gradient using finite differences of the QED-RHF energy."""
+#         # Initialize gradient array
+#         gradient = np.zeros_like(self.cartesian_coords)
 
-        # Compute the initial energy
-        initial_energy = self.compute_initial_energy()
-        print("Initial QED-RHF energy:", initial_energy)
+#         # Compute the initial energy
+#         initial_energy = self.compute_initial_energy()
+#         print("Initial QED-RHF energy:", initial_energy)
 
-        # Loop over all atoms and their x, y, z coordinates
-        for atom in range(self.n_atoms):
-            for coord in range(3):
-                # Create copies of the molecule for positive and negative displacements
-                mol_plus = self.mol.clone()
-                mol_minus = self.mol.clone()
+#         # Loop over all atoms and their x, y, z coordinates
+#         for atom in range(self.n_atoms):
+#             for coord in range(3):
+#                 # Create copies of the molecule for positive and negative displacements
+#                 mol_plus = self.mol.clone()
+#                 mol_minus = self.mol.clone()
 
-                # Displace the coordinates
-                coords_plus = mol_plus.geometry().np
-                coords_minus = mol_minus.geometry().np
+#                 # Displace the coordinates
+#                 coords_plus = mol_plus.geometry().np
+#                 coords_minus = mol_minus.geometry().np
 
-                coords_plus[atom, coord] += self.step_size
-                coords_minus[atom, coord] -= self.step_size
-                print("Displaced coordinates:", coords_plus, coords_minus)  
+#                 coords_plus[atom, coord] += self.step_size
+#                 coords_minus[atom, coord] -= self.step_size
+#                 print("Displaced coordinates:", coords_plus, coords_minus)  
 
-                # Set the displaced geometries
-                mol_plus.set_geometry(psi4.core.Matrix.from_array(coords_plus))
-                mol_minus.set_geometry(psi4.core.Matrix.from_array(coords_minus))
+#                 # Set the displaced geometries
+#                 mol_plus.set_geometry(psi4.core.Matrix.from_array(coords_plus))
+#                 mol_minus.set_geometry(psi4.core.Matrix.from_array(coords_minus))
 
-                #converting the coordinates to string(z matriz)
-                mol_plus_string = mol_plus.save_string_xyz()
-                mol_minus_string = mol_minus.save_string_xyz()
-                # Print mol_plus geometry
-                print("mol_plus geometry:", mol_plus_string)
-                print("molecule_string type:", type(mol_plus_string))
-                # print("molecule_string:", molecule_string)  
-                # print(mol_plus.geometry().to_array())
+#                 #converting the coordinates to string(z matriz)
+#                 mol_plus_string = mol_plus.save_string_xyz()
+#                 mol_minus_string = mol_minus.save_string_xyz()
+#                 # Print mol_plus geometry
+#                 print("mol_plus geometry:", mol_plus_string)
+#                 print("molecule_string type:", type(mol_plus_string))
+#                 # print("molecule_string:", molecule_string)  
+#                 # print(mol_plus.geometry().to_array())
 
-                # Print mol_minus geometry
-                print("mol_minus geometry:", mol_minus_string)
-                # print(mol_minus.geometry().to_array())
+#                 # Print mol_minus geometry
+#                 print("mol_minus geometry:", mol_minus_string)
+#                 # print(mol_minus.geometry().to_array())
 
-                # some error in psi4 geometry while calling this function
-                # Calculate energies for displaced geometries
-                qed_rhf_energy_plus = self.compute_displaced_energy(mol_plus)
-                qed_rhf_energy_minus = self.compute_displaced_energy(mol_minus)
+#                 # some error in psi4 geometry while calling this function
+#                 # Calculate energies for displaced geometries
+#                 qed_rhf_energy_plus = self.compute_displaced_energy(mol_plus)
+#                 qed_rhf_energy_minus = self.compute_displaced_energy(mol_minus)
 
-                # Compute the gradient using central difference
-                gradient[atom, coord] = (qed_rhf_energy_plus - qed_rhf_energy_minus) / (2 * self.step_size)
-                print("Computed gradient")
+#                 # Compute the gradient using central difference
+#                 gradient[atom, coord] = (qed_rhf_energy_plus - qed_rhf_energy_minus) / (2 * self.step_size)
+#                 print("Computed gradient")
 
-        return gradient
+#         return gradient
 
