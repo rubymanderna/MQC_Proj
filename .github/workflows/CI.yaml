@@ -56,6 +56,8 @@ jobs:
         run: |
           conda install -c conda-forge psi4 -y
           python -m pip install . --no-deps
+          pip install numpy  
+          pip install unittest-mock 
           micromamba list
           
       - name: Run tests
