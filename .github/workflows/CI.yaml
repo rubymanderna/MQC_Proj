@@ -59,14 +59,16 @@ jobs:
         # conda setup requires this special shell
         shell: bash -l {0}
         run: |
+          micromamba activate test
           mamba install -c conda-forge psi4 libecpint -y
           python -m pip install . --no-deps
-          pip install numpy  
-          pip install unittest-mock 
+          pip install numpy unittest-mock
           micromamba list
 
       - name: Verify psi4 installation
+        shell: bash -l {0}
         run: |
+          micromamba activate test
           python -m pip show psi4
 
       - name: Set PYTHONPATH
