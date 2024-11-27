@@ -39,6 +39,11 @@ jobs:
         run: |
           find . -name '.DS_Store' -delete
 
+      - name: Install micromamba
+        run: |
+          curl -Ls https://micro.mamba.pm/install.sh | bash
+          export PATH="$HOME/.micromamba/bin:$PATH"
+
       # More info on options: https://github.com/marketplace/actions/setup-micromamba
       - uses: mamba-org/setup-micromamba@v1
         with:
@@ -59,6 +64,13 @@ jobs:
           pip install numpy  
           pip install unittest-mock 
           micromamba list
+
+      - name: Verify psi4 installation
+        run: |
+          python -m pip show psi4
+
+      - name: Set PYTHONPATH
+        run: echo "export PYTHONPATH=$(pwd)/MQC_Proj" >> $GITHUB_ENV
           
       - name: Run tests
         # conda setup requires this special shell
