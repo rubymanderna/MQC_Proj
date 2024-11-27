@@ -55,6 +55,11 @@ jobs:
           create-args: >- 
             python=${{ matrix.python-version }}
 
+      - name: Check psi4 availability
+        shell: bash
+        run: micromamba search -c conda-forge psi4
+
+
       - name: Install package
         # conda setup requires this special shell
         shell: bash -l {0}
