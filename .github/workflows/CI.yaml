@@ -64,18 +64,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba create -n p4env psi4 -c conda-forge/label/libint_dev -c conda-forge
-          micromamba activate p4env
-          which psi4
-          psi4 --version
-          micromamba list
-
-      - name: Install package
-        run: |
+          micromamba create -n p4env psi4 numpy pytest pytest-cov -c conda-forge/label/libint_dev -c conda-forge
           micromamba activate p4env
           python -m pip install . --no-deps
-          pip install numpy unittest-mock
+          pip install unittest-mock
           micromamba list
+
+      - name: Verify installations
+        run: |
+          micromamba activate test_env
+          which psi4
+          psi4 --version
+          python -c "import numpy; print(numpy.__version__)"
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=${{ github.workspace }}/MQC_Proj" >> $GITHUB_ENV
