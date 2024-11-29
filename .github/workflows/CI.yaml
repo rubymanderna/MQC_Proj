@@ -69,8 +69,8 @@ jobs:
 
       - name: Check directory structure
         run: |
-        pwd
-        ls -R
+          pwd
+          ls -R
 
       - name: Prepare CI.yaml
         run: |
