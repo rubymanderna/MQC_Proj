@@ -70,22 +70,12 @@ jobs:
           psi4 --version
           micromamba list
 
-      - name: Check directory structure
-        run: |
-          pwd
-          ls -R
-
       - name: Install package
         run: |
           micromamba activate p4env
           python -m pip install . --no-deps
           pip install numpy unittest-mock
           micromamba list
-
-      - name: Verify psi4 installation
-        run: |
-          micromamba activate test
-          python -m pip show psi4
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=${{ github.workspace }}/MQC_Proj" >> $GITHUB_ENV
