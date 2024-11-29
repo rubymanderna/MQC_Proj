@@ -74,8 +74,8 @@ jobs:
 
       - name: Prepare CI.yaml
         run: |
-          mkdir -p installers
-          cd installers
+          mkdir -p .github/workflows
+          cd .github/workflows
           if [ ! -f "CI.yaml" ]; then
             echo "CI.yaml not found, creating a sample file"
             echo "{% set python = '3.8' %}" > CI.yaml
@@ -86,7 +86,7 @@ jobs:
 
       - name: Build Installer
         run: |
-          cd installers/
+          cd .github/workflows/
           MICROMAMBA_VERSION=1.3.1
           MICROMAMBA_BUILD=0
           curl -L -O "https://anaconda.org/conda-forge/micromamba/${MICROMAMBA_VERSION}/download/${{ matrix.platform }}/micromamba-${MICROMAMBA_VERSION}-${MICROMAMBA_BUILD}.tar.bz2"
