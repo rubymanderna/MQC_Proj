@@ -67,9 +67,20 @@ jobs:
           micromamba install -y -q -c conda-forge constructor jinja2 curl libarchive
           micromamba list
 
+      - name: Check directory structure
+        run: |
+        pwd
+        ls -R
+
       - name: Prepare CI.yaml
         run: |
-          cd installers/
+          mkdir -p installers
+          cd installers
+          if [ ! -f "CI.yaml" ]; then
+            echo "CI.yaml not found, creating a sample file"
+            echo "{% set python = '3.8' %}" > CI.yaml
+            echo "{% set platform = 'xxx' %}" >> CI.yaml
+          fi
           sed -i.bak 's/{% set python = "3.8" %}/{% set python = "${{ env.PYVER }}" %}/g' CI.yaml
           sed -i.bak 's/{% set platform = "xxx" %}/{% set platform = "${{ matrix.platform }}" %}/g' CI.yaml
 
