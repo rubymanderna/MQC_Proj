@@ -73,9 +73,8 @@ jobs:
       - name: Verify installations
         run: |
           micromamba activate p4env
-          which psi4
           psi4 --version
-          python -c "import numpy; print(numpy.__version__)"
+          pip list | grep numpy | awk '{print $2}'
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=${{ github.workspace }}/MQC_Proj" >> $GITHUB_ENV
