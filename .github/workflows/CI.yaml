@@ -81,7 +81,7 @@ jobs:
 
       - name: Run tests
         run: |
-          micromamba activate test
+          micromamba activate p4env
           pytest -v --cov=MQC_Proj --cov-report=xml --color=yes MQC_Proj/tests/
 
       - name: Upload coverage
