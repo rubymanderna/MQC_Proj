@@ -29,8 +29,13 @@ __date__ = "2021-08-19"
 # ==> Import Psi4, numpy, and helper_CS_CQED_CIS <==
 import psi4
 import numpy as np
-from helper_CS_CQED_CIS import *
+import sys
+import os
+# Add the folder path where the file is located
+# sys.path.append(os.path.abspath('../MQC_Proj'))
+# from helper_CS_CQED_CIS import *
 from psi4.driver.procrouting.response.scf_response import tdscf_excitations
+from MQC_Proj.helper_CS_CQED_CIS import cs_cqed_cis
 
 # Set Psi4 & NumPy Memory Options
 psi4.set_memory("2 GB")

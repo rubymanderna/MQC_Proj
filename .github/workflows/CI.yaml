@@ -5,7 +5,7 @@ on:
   # The cookiecutter uses the "--initial-branch" flag when it runs git-init
   push:
     branches:
-      - "main"
+      - "*"
   pull_request:
     branches:
       - "main"
@@ -17,52 +17,75 @@ on:
 
 jobs:
   test:
-    name: Test on ${{ matrix.os }}, Python ${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest, ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11"]
+        os: [macos-latest, ubuntu-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        include:
+          - os: macos-latest
+            platform: osx-64
+          - os: ubuntu-latest
+            platform: linux-64
+
+    name: 🐍 ${{ matrix.python-version }} • ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      PYVER: ${{ matrix.python-version }}
+
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Additional info about the build
-        shell: bash
         run: |
           uname -a
           df -h
           ulimit -a
 
-      # More info on options: https://github.com/marketplace/actions/setup-micromamba
-      - uses: mamba-org/setup-micromamba@v1
+      - name: Remove .DS_Store files (if any)
+        run: |
+          find . -name '.DS_Store' -delete
+
+      - name: Set up Micromamba
+        uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: devtools/conda-envs/test_env.yaml
           environment-name: test
+          create-args: >-
+            python=${{ matrix.python-version }}
           condarc: |
             channels:
               - conda-forge
-          create-args: >- 
-            python=${{ matrix.python-version }}
 
-      - name: Install package
-        # conda setup requires this special shell
-        shell: bash -l {0}
+      - name: Install dependencies
         run: |
+          micromamba create -n p4env psi4 numpy pytest pytest-cov -c conda-forge/label/libint_dev -c conda-forge
+          micromamba activate p4env
           python -m pip install . --no-deps
+          pip install unittest-mock
           micromamba list
-        # install psi4 trhough conda/pip
-          conda install psi4 -c conda-forge -y
-          
+
+      - name: Verify installations
+        run: |
+          micromamba activate p4env
+          psi4 --version
+          pip list | grep numpy | awk '{print $2}'
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=${{ github.workspace }}/MQC_Proj" >> $GITHUB_ENV
 
       - name: Run tests
-        # conda setup requires this special shell
-        shell: bash -l {0}
         run: |
+          micromamba activate p4env
           pytest -v --cov=MQC_Proj --cov-report=xml --color=yes MQC_Proj/tests/
 
-      - name: CodeCov
-        uses: codecov/codecov-action@v1
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
           flags: unittests

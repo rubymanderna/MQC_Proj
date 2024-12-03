@@ -7,6 +7,4 @@ from .pQED_code import *
 from ._version import __version__
 
 #importing the required modules and constants
-from MQC_Proj.helper_CS_CQED_CIS import *
-from MQC_Proj.helper_CQED_RHF_old import *
-from MQC_Proj.helper_CQED_RHF_new import *
+

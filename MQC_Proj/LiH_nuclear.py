@@ -25,8 +25,8 @@ psi4.core.set_output_file("output.dat", False)
 numpy_memory = 2
 
 # options for H2O
-h2o_options_dict = {
-    "basis": "cc-pVDZ",
+psi4_options_dict = {
+    "basis": "6-31G",
     "save_jk": True,
     "scf_type": "pk",
     "e_convergence": 1e-12,
@@ -35,52 +35,41 @@ h2o_options_dict = {
 
 
 # molecule string for H2O
-h2o_string = """
-
-0 1
-    O      0.000000000000   0.000000000000  -0.068516219320
-    H      0.000000000000  -0.790689573744   0.543701060715
-    H      0.000000000000   0.790689573744   0.543701060715
-no_reorient
+mol_str = """
+0  1
+Li   0.0    0.0    -0.276328822272
+H    0.0   0.0    1.923671177728
 symmetry c1
 """
+#convert the z-matrix to xyz coordinates
+# mol = psi4.geometry(mol_str)
+# mol.update_geometry()
+# mol.print_out_in_angstrom()
+# print(mol.save_string_xyz()) 
 
-# energy for H2O from hilbert package described in [DePrince:2021:094112]
-expected_h2o_e = -76.016355284146
 
 # electric field for H2O - polarized along z-axis with mangitude 0.05 atomic units
-lam_h2o = np.array([0.0, 0.0, 0.05])
+lam_vec = np.array([0.0, 0.0, 0.05])
 
 # Instantiate the Psi4Calculator
-cal_energy = CQED_RHF_Calculation(lam_h2o, h2o_string, h2o_options_dict)
+cal_energy = CQED_RHF_Calculation(lam_vec, mol_str, psi4_options_dict)
 
 # run cqed_rhf on H2O
 a1 = cal_energy.cal_Integrals()
 a2 = cal_energy.cal_quadrapole_moments()
 h2o_dict = cal_energy.cal_H_core()
 a3 = cal_energy.cqed_rhf()
-
-# print("NUCLEAR GRADIENTS CALCULATION STARTED")
-# a4 = compute_nuclear_gradient_cqed_rhf(lam_h2o, h2o_string, h2o_options_dict)
+print("CQED-RHF Energy for LiH is ", a3["CQED-RHF ENERGY"])
 
 # parse dictionary for ordinary RHF and CQED-RHF energy
 h2o_cqed_rhf_e = a3["CQED-RHF ENERGY"]
-h2o_rhf_e = a3["RHF ENERGY"]
-
-print("RHF Energy Ruby")
+# h2o_rhf_e = a3["RHF ENERGY"]
 
 # parse dictionary for ordinary RHF and CQED-RHF energy
 # h2o_cqed_rhf_e = h2o_dict["CQED-RHF ENERGY"]
 # h2o_rhf_e = h2o_dict["RHF ENERGY"]
 
-
-print("\n    RHF Energy:                %.8f" % h2o_rhf_e)
 print("    CQED-RHF Energy:           %.8f" % h2o_cqed_rhf_e)
-print("    Reference CQED-RHF Energy: %.8f\n" % expected_h2o_e)
 
-# psi4.compare_values(h2o_cqed_rhf_e, expected_h2o_e, 8, "H2O CQED-RHF E")
-# # Calculate the nuclear gradient of the CQED-RHF energy
-# Nuclear_grad = compute_nuclear_gradient_cqed_rhf(h2o_string, cqed_rhf, step_size=1e-5)
 
-# print("\nNuclear Gradient:" , Nuclear_grad)
 
